@@ -1,5 +1,16 @@
 # Prueba de Concepto de Timbre
 
+Hardware
+
+- Raspberry Pi 4 Model B 8GB
+- Sensor PIR
+- LED
+- Buzzer
+- Resistencia de 1 kOhm
+- Servo Motor SG90
+- Jumpers
+
+
 Tecnologías
 
 
@@ -18,6 +29,33 @@ Conectar los siguientes componentes en los pines GPIO especificados a continuaci
 |PIR Sensor|17|
 |Servo Motor|27|
 |LED|26|
+
+Recomendamos utilizar el Raspberry Pi Imager para grabar el Sistema Operativo Raspberry Pi OS en una microSD y preconfigurar el usuario por defecto y la contraseña, así también como cargar los datos de la red Wi-Fi para podernos conectar tranquilamente por SSH a la Raspberry Pi.
+
+Para conectarnos por SSH, primero debemos ubicar nuestra dirección IP en la red Wi-Fi, esto lo podemos descubrir
+con comandos como ipconfig en Windows o ifconfig en Linux.
+
+Luego, una vez conectado todo, enchufar la Raspberry Pi
+y esperar unos minutos para que arranque correctamente,
+luego a partir de la IP de nuestra computadora podemos utilizar herramientas como NMAP para escanear la red
+y descubrir la IP de la Raspberry, es importante conservar esta IP puesto que se utilizará para configurar la intefaz
+web.
+
+Podemos escanear la red mediante el siguiente comando de nmap:
+
+```bash
+sudo nmap -sn 192.168.0.0/24
+```
+
+Los primeros 3 segmentos de la IP en el comando corresponden a los primeros 3 segmentos de nuestra propia IP.
+
+Luego podemos conectarnos por SSH a la Raspberry Pi:
+
+```bash
+ssh <usuario>@<ip_raspberry>
+```
+
+Ingresamos la contraseña y habremos accedido a la Raspberry.
 
 ## Instalación
 
@@ -49,7 +87,7 @@ Clonar este repositorio desde adentro de la Raspberry Pi
 mediante el comando
 
 ```bash
-git clone
+git clone https://github.com/YuutoG/mip115-2023-timbre-domotica
 ```
 
 Desde la carpeta raíz del proyecto se deberá crear el entorno
@@ -91,6 +129,8 @@ Luego instalamos globalmente la herramienta PM2 para gestionar todos nuetros pro
 npm install -g pm2
 ```
 
+### Timbre
+
 Primeramente para mantener el proceso de timbre nos desplazamos al directorio de timbre
 
 ```bash
@@ -109,6 +149,8 @@ Pero para que se mantenga ejecutando en segundo plano sin obstruir la consola, u
 pm2 start ./door_bell.py --name "timbre" --interpreter ../venv/bin/python
 ```
 
+### Backend
+
 Nos desplazamos al directorio de backend para levantar el servicio que controlará el LED y el servo motor (bisagra de puerta):
 
 ```bash
@@ -119,6 +161,8 @@ Aquí ejecutaremos en servicio para que PM2 lo mantenga en segundo plano, por de
 ```bash
 pm2 start "../venv/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8080 --reload" --name "aPi"
 ```
+
+### Frontend
 
 Nos desplazamos para la carpeta frontend para ejecutar la interfaz web:
 
@@ -131,6 +175,17 @@ Primeramente instalamos toda las dependencias en limpio con
 ```bash
 npm ci
 ```
+
+Copiamos el archivo .env-local y lo renombramos .env.local.
+Editamos este mismo archivo .env.local y nos aseguramos que solamente tenga
+la siguiente línea en el archivo:
+
+```
+NEXT_PUBLIC_ENDPOINT=http://raspi:8080
+```
+
+Sustituir la palabra "raspi" por la IP de la Raspberry Pi. Esto es para que nuestra interfaz
+web pueda interactuar con la API REST de Python con FastAPI.
 
 Podemos levantar la interfaz web en modo desarrollo mediante:
 
