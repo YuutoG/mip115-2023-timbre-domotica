@@ -32,17 +32,17 @@ Instalar "pigpiod" dentro de la Raspberry Pi para evitar
 la vibración intermitente del servo motor.
 
 ```bash
-sudo apt install pigpiod
+sudo apt install pigpio
 ```
 
 después activar el daemon y configurarlo para que se inicie siempre:
 
 ```bash
-sudo pigpiod
+sudo systemctl start pigpiod
 ```
 
 ```bash
-sudo systemctl pigpiod enable
+sudo systemctl enable pigpiod
 ```
 
 Clonar este repositorio desde adentro de la Raspberry Pi
