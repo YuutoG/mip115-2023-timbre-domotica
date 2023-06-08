@@ -6,11 +6,12 @@ import { useState, useEffect } from 'react'
 export default function Home() {
   const [puerta, setPuerta] = useState(false);
   const [led, setLed] = useState(false)
+  const url = process.env.NEXT_PUBLIC_ENDPOINT;
 
   const toggleDoor = async () => {
     console.log("changing door status")
     
-      const response = await axios.get("http://192.168.0.17:8080/door")
+      const response = await axios.get(`${url}/door`)
       setPuerta(response.data.status)
     
   }
@@ -18,7 +19,7 @@ export default function Home() {
   const toggleLamp = async () => {
     console.log("Changing lamp status")
     
-      const response = await axios.get("http://192.168.0.17:8080/led")
+      const response = await axios.get(`${url}/led`)
       setPuerta(response.data.status)
     
   }
@@ -26,11 +27,11 @@ export default function Home() {
   useEffect(() => {
     console.log("effect is working")
     const getDoorStatus = async () => {
-      const response = await axios.get("http://192.168.0.17:8080/door/status")
+      const response = await axios.get(`${url}/door/status`)
       setPuerta(response.data.status)
     }
     const getLedStatus = async () => {
-      const response = await axios.get("http://192.168.0.17:8080/led/status")
+      const response = await axios.get(`${url}/led/status`)
       setLed(response.data.status)
     }
     getDoorStatus()
